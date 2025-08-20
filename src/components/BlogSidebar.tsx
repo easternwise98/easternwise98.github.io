@@ -17,7 +17,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
 
 interface Category {
   name: string;
@@ -127,19 +127,17 @@ export function BlogSidebar({ selectedCategory, onCategorySelect, onWritePost, o
         <ScrollArea className="flex-1 px-2">
           <div className="space-y-1">
             {categories.map((category, index) => (
-              <motion.div
+              <div
                 key={category.name}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2, delay: index * 0.05 }}
                 onClick={() => onCategorySelect(category.name)}
                 className={`
-                  flex items-center justify-between p-3 mx-2 rounded-lg cursor-pointer transition-all duration-200
+                  flex items-center justify-between p-3 mx-2 rounded-lg cursor-pointer transition-all duration-200 animate-in fade-in-0 slide-in-from-left-4
                   ${selectedCategory === category.name 
                     ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm' 
                     : 'hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground'
                   }
                 `}
+                style={{animationDelay: `${index * 50}ms`}}
               >
                 <div className="flex items-center space-x-3">
                   <span className={selectedCategory === category.name ? 'text-sidebar-primary-foreground' : category.color}>
@@ -159,7 +157,7 @@ export function BlogSidebar({ selectedCategory, onCategorySelect, onWritePost, o
                 >
                   {category.count}
                 </Badge>
-              </motion.div>
+              </div>
             ))}
           </div>
         </ScrollArea>

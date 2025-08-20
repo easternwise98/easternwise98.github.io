@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Search, Filter, X, Calendar as CalendarIcon } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+// import { motion, AnimatePresence } from "framer-motion";
 
 interface AdvancedSearchProps {
   searchQuery: string;
@@ -65,14 +65,8 @@ export function AdvancedSearch({
         )}
       </div>
 
-      <AnimatePresence>
-        {showAdvanced && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="bg-card border border-border rounded-lg p-4 space-y-4"
-          >
+      {showAdvanced && (
+        <div className="bg-card border border-border rounded-lg p-4 space-y-4 animate-in fade-in-0 slide-in-from-top-2 duration-200">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* 정렬 */}
               <div className="space-y-2">
@@ -162,9 +156,8 @@ export function AdvancedSearch({
                 </div>
               </div>
             )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 }

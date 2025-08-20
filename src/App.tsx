@@ -4,7 +4,7 @@ import { BlogPost } from "./components/BlogPost";
 import { AdvancedSearch } from "./components/AdvancedSearch";
 import { WritePostModal } from "./components/WritePostModal";
 import { ScrollArea } from "./components/ui/scroll-area";
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
 
 interface Post {
   id: number;
@@ -237,31 +237,18 @@ export default function App() {
         <ScrollArea className="flex-1">
           <div className="p-6">
             <div className="max-w-none">
-              <motion.div 
-                layout
-                className={`grid gap-6 ${getGridColumns()}`}
-              >
+              <div className={`grid gap-6 ${getGridColumns()}`}>
                 {filteredPosts.map((post, index) => (
-                  <motion.div
-                    key={post.id}
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                  >
+                  <div key={post.id} className="animate-in fade-in-0 slide-in-from-bottom-4 duration-300" style={{animationDelay: `${index * 50}ms`}}>
                     <BlogPost {...post} />
-                  </motion.div>
+                  </div>
                 ))}
-              </motion.div>
+              </div>
               
               {filteredPosts.length === 0 && (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-12"
-                >
+                <div className="text-center py-12 animate-in fade-in-0 duration-500">
                   <p className="text-muted-foreground">검색 조건에 맞는 글이 없습니다.</p>
-                </motion.div>
+                </div>
               )}
             </div>
           </div>

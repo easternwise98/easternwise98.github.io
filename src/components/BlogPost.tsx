@@ -1,7 +1,7 @@
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Calendar, Eye, Heart } from "lucide-react";
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface BlogPostProps {
@@ -30,13 +30,7 @@ export function BlogPost({
   isNew = false 
 }: BlogPostProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ y: -2 }}
-      className="w-full"
-    >
+    <div className="w-full group">
       <Card className="bg-card border border-border hover:border-primary/50 transition-all duration-300 cursor-pointer group h-full overflow-hidden">
         {/* 대표 이미지 */}
         {imageUrl && (
@@ -107,6 +101,6 @@ export function BlogPost({
           </div>
         </CardFooter>
       </Card>
-    </motion.div>
+    </div>
   );
 }

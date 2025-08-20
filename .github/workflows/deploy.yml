@@ -1,67 +1,37 @@
-name: GitHub Pages 배포
+name: Deploy to GitHub Pages
 
 on:
-  # main 브랜치에 push될 때 실행
   push:
     branches: [ main ]
-  
-  # Pull Request가 main으로 향할 때 실행 (선택사항)
   pull_request:
     branches: [ main ]
 
-  # 수동으로 워크플로우 실행 가능
-  workflow_dispatch:
-
-# GitHub Pages와 연동을 위한 권한 설정
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# 동시에 하나의 배포만 실행되도록 설정
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  # 빌드 잡
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - name: 코드 체크아웃
+    - name: Checkout
       uses: actions/checkout@v4
-      
-    - name: Node.js 설정
+
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
-        
-    - name: 의존성 설치
+
+    - name: Install dependencies
       run: npm ci
-      
-    - name: GitHub Pages 설정
-      uses: actions/configure-pages@v3
-      
-    - name: 애플리케이션 빌드
+
+    - name: Build
       run: npm run build
-      
-    - name: 빌드 결과물 업로드
-      uses: actions/upload-pages-artifact@v2
+      env:
+        CI: false
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
       with:
-        path: './dist'
-
-  # 배포 잡
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    
-    steps:
-    - name: GitHub Pages 배포
-      id: deployment
-      uses: actions/deploy-pages@v2
-
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build
+        cname: easternwise98.github.io

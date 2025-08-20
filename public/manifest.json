@@ -1,0 +1,26 @@
+{
+  "short_name": "Structural Research",
+  "name": "Structural Research - 구조공학 연구 블로그",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png", 
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png", 
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./",
+  "display": "standalone",
+  "theme_color": "#1e40af",
+  "background_color": "#ffffff",
+  "description": "구조공학 연구자의 기술 블로그 - 내진공학, 구조설계, 구조해석 등 구조공학 전반에 대한 연구 내용과 실무 경험을 공유합니다."
+}

@@ -6,6 +6,7 @@ export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
+    // 초기 테마 설정: localStorage 우선, 없으면 시스템 설정 사용
     const theme = localStorage.getItem('theme');
     if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       setIsDark(true);

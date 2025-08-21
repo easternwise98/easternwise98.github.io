@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Search, Filter, X, Calendar as CalendarIcon } from "lucide-react";
-// import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface AdvancedSearchProps {
   searchQuery: string;
@@ -43,21 +43,29 @@ export function AdvancedSearch({
     <div className="space-y-4">
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 transition-colors duration-200" />
           <Input
             placeholder="제목, 내용, 태그로 검색..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-input-background"
+            className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 hover:border-primary/50"
           />
         </div>
-        <Button
-          variant={showAdvanced ? "default" : "outline"}
-          size="icon"
-          onClick={() => setShowAdvanced(!showAdvanced)}
-        >
-          <Filter className="w-4 h-4" />
-        </Button>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            variant={showAdvanced ? "default" : "outline"}
+            size="icon"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="transition-all duration-200"
+          >
+            <motion.div
+              animate={{ rotate: showAdvanced ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Filter className="w-4 h-4" />
+            </motion.div>
+          </Button>
+        </motion.div>
         {hasActiveFilters && (
           <Button variant="ghost" size="icon" onClick={clearFilters}>
             <X className="w-4 h-4" />
@@ -66,7 +74,14 @@ export function AdvancedSearch({
       </div>
 
       {showAdvanced && (
-        <div className="bg-card border border-border rounded-lg p-4 space-y-4 animate-in fade-in-0 slide-in-from-top-2 duration-200">
+        <motion.div
+          key="advanced-search"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+          className="bg-card border border-border rounded-lg p-4 space-y-4"
+        >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* 정렬 */}
               <div className="space-y-2">
@@ -126,14 +141,19 @@ export function AdvancedSearch({
               <label className="text-sm font-medium text-foreground">태그 필터</label>
               <div className="flex flex-wrap gap-2">
                 {availableTags.map((tag) => (
-                  <Badge
+                  <motion.div
                     key={tag}
-                    variant={selectedTags.includes(tag) ? "default" : "outline"}
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                    onClick={() => onTagToggle(tag)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    #{tag}
-                  </Badge>
+                    <Badge
+                      variant={selectedTags.includes(tag) ? "default" : "outline"}
+                      className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-all duration-200 hover:shadow-md"
+                      onClick={() => onTagToggle(tag)}
+                    >
+                      #{tag}
+                    </Badge>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -144,20 +164,28 @@ export function AdvancedSearch({
                 <label className="text-sm font-medium text-foreground">활성 필터</label>
                 <div className="flex flex-wrap gap-2">
                   {selectedTags.map((tag) => (
-                    <Badge
+                    <motion.div
                       key={tag}
-                      className="bg-primary text-primary-foreground cursor-pointer"
-                      onClick={() => onTagToggle(tag)}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      #{tag}
-                      <X className="w-3 h-3 ml-1" />
-                    </Badge>
+                      <Badge
+                        className="bg-primary text-primary-foreground cursor-pointer hover:bg-primary/90 transition-all duration-200"
+                        onClick={() => onTagToggle(tag)}
+                      >
+                        #{tag}
+                        <X className="w-3 h-3 ml-1" />
+                      </Badge>
+                    </motion.div>
                   ))}
                 </div>
               </div>
             )}
-        </div>
-      )}
+          </motion.div>
+        )}
     </div>
   );
 }

@@ -1,52 +1,30 @@
-import { useState } from "react";
-import { BlogProfile } from "./BlogProfile";
-import { ThemeToggle } from "./ThemeToggle";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
-import { 
-  Building, 
-  Calculator, 
-  Hammer, 
-  Zap, 
-  FlaskConical, 
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { BlogProfile } from './BlogProfile';
+import { ThemeToggle } from './ThemeToggle';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { ScrollArea } from './ui/scroll-area';
+import {
   BookOpen,
-  Lightbulb,
-  Coffee,
-  Plus,
   ChevronLeft,
   ChevronRight
-} from "lucide-react";
-// import { motion } from "framer-motion";
-
-interface Category {
-  name: string;
-  count: number;
-  icon: React.ReactNode;
-  color: string;
-}
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface BlogSidebarProps {
+  categories: Record<string, number>;
   selectedCategory: string;
   onCategorySelect: (category: string) => void;
-  onWritePost: () => void;
   onWidthChange: (width: number) => void;
+  totalPosts: number;
 }
 
-export function BlogSidebar({ selectedCategory, onCategorySelect, onWritePost, onWidthChange }: BlogSidebarProps) {
-  const [sidebarWidth, setSidebarWidth] = useState(320); // 픽셀 단위
+export function BlogSidebar({ categories, selectedCategory, onCategorySelect, onWidthChange, totalPosts }: BlogSidebarProps) {
+  const [sidebarWidth, setSidebarWidth] = useState(320);
   const [isResizing, setIsResizing] = useState(false);
 
-  const categories: Category[] = [
-    { name: "전체", count: 67, icon: <BookOpen className="w-4 h-4" />, color: "text-foreground" },
-    { name: "구조설계", count: 18, icon: <Building className="w-4 h-4" />, color: "text-primary" },
-    { name: "내진공학", count: 15, icon: <Zap className="w-4 h-4" />, color: "text-accent" },
-    { name: "구조해석", count: 12, icon: <Calculator className="w-4 h-4" />, color: "text-primary" },
-    { name: "건설기술", count: 9, icon: <Hammer className="w-4 h-4" />, color: "text-accent" },
-    { name: "연구방법론", count: 8, icon: <FlaskConical className="w-4 h-4" />, color: "text-primary" },
-    { name: "학회발표", count: 6, icon: <Lightbulb className="w-4 h-4" />, color: "text-accent" },
-    { name: "일상", count: 4, icon: <Coffee className="w-4 h-4" />, color: "text-muted-foreground" },
-  ];
+  const categoryList = ['전체', ...Object.keys(categories).sort()];
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsResizing(true);
@@ -76,19 +54,17 @@ export function BlogSidebar({ selectedCategory, onCategorySelect, onWritePost, o
   };
 
   return (
-    <div 
+    <div
       className="h-screen bg-sidebar border-r border-sidebar-border flex flex-col relative"
       style={{ width: sidebarWidth }}
     >
-      {/* 크기 조절 핸들 */}
       <div
         className={`absolute right-0 top-0 w-1 h-full cursor-col-resize hover:bg-primary/20 transition-colors ${
           isResizing ? 'bg-primary/40' : ''
         }`}
         onMouseDown={handleMouseDown}
       />
-      
-      {/* 사이드바 토글 버튼 */}
+
       <Button
         variant="ghost"
         size="icon"
@@ -103,62 +79,65 @@ export function BlogSidebar({ selectedCategory, onCategorySelect, onWritePost, o
       </Button>
 
       <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
-        <h2 className="text-sidebar-foreground font-semibold">Structural Research</h2>
+        <Link to="/">
+          <h2 className="text-sidebar-foreground font-semibold hover:text-primary transition-colors">BeTwins's Blog</h2>
+        </Link>
         <ThemeToggle />
       </div>
-      
-      <BlogProfile />
-      
-      <div className="p-4 border-b border-sidebar-border">
-        <Button 
-          onClick={onWritePost}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          새 글 작성
-        </Button>
-      </div>
-      
-      <div className="flex-1 overflow-hidden">
+
+      <BlogProfile totalPosts={totalPosts} />
+
+      <div className="flex-1 flex flex-col">
         <div className="p-4">
-          <h4 className="text-sidebar-foreground mb-4 font-medium">연구 분야</h4>
+          <h4 className="text-sidebar-foreground mb-4 font-medium">목차</h4>
         </div>
-        
+
         <ScrollArea className="flex-1 px-2">
-          <div className="space-y-1">
-            {categories.map((category, index) => (
-              <div
-                key={category.name}
-                onClick={() => onCategorySelect(category.name)}
-                className={`
-                  flex items-center justify-between p-3 mx-2 rounded-lg cursor-pointer transition-all duration-200 animate-in fade-in-0 slide-in-from-left-4
-                  ${selectedCategory === category.name 
-                    ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm' 
-                    : 'hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground'
-                  }
-                `}
-                style={{animationDelay: `${index * 50}ms`}}
-              >
-                <div className="flex items-center space-x-3">
-                  <span className={selectedCategory === category.name ? 'text-sidebar-primary-foreground' : category.color}>
-                    {category.icon}
-                  </span>
-                  <span className="text-sm font-medium">{category.name}</span>
-                </div>
-                <Badge 
-                  variant="secondary" 
+          <div className="space-y-1 pb-4">
+            {categoryList.map((categoryName, index) => {
+              const categoryItem = (
+                <motion.div
+                  key={categoryName}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  whileHover={{ x: 4, transition: { duration: 0.2 } }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => onCategorySelect(categoryName)}
                   className={`
-                    text-xs
-                    ${selectedCategory === category.name 
-                      ? 'bg-sidebar-primary-foreground/20 text-sidebar-primary-foreground' 
-                      : 'bg-sidebar-accent text-sidebar-accent-foreground'
+                    flex items-center justify-between p-3 mx-2 rounded-lg cursor-pointer transition-all duration-200
+                    ${selectedCategory === categoryName
+                      ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
+                      : 'hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground'
                     }
                   `}
                 >
-                  {category.count}
-                </Badge>
-              </div>
-            ))}
+                  <div className="flex items-center space-x-3">
+                    <span className={selectedCategory === categoryName ? 'text-sidebar-primary-foreground' : 'text-foreground'}>
+                      <BookOpen className="w-4 h-4" />
+                    </span>
+                    <span className="text-sm font-medium">{categoryName}</span>
+                  </div>
+                  <Badge
+                    variant="secondary"
+                    className={`
+                      text-xs
+                      ${selectedCategory === categoryName
+                        ? 'bg-sidebar-primary-foreground/20 text-sidebar-primary-foreground'
+                        : 'bg-sidebar-accent text-sidebar-accent-foreground'
+                      }
+                    `}
+                  >
+                    {categoryName === '전체' ? totalPosts : categories[categoryName]}
+                  </Badge>
+                </motion.div>
+              );
+
+              if (categoryName === '전체') {
+                return <Link key="home-link" to="/">{categoryItem}</Link>;
+              }
+              return categoryItem;
+            })}
           </div>
         </ScrollArea>
       </div>

@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/static/css/main.4d9eb33c.css",
-    "main.js": "/static/js/main.41c2c51c.js",
+    "main.css": "/static/css/main.6b4b3e10.css",
+    "main.js": "/static/js/main.07b2e8b7.js",
     "static/media/BeTwinsLogo.png": "/static/media/BeTwinsLogo.b6e81d117a81c9bc5c77.png",
     "index.html": "/index.html",
     "static/media/NanumSquareRoundB.woff": "/static/media/NanumSquareRoundB.ed9125bb52412e95369b.woff",
     "static/media/NanumSquareRoundL.woff": "/static/media/NanumSquareRoundL.25b546c4b46bb4752a23.woff",
     "static/media/NanumSquareRoundR.woff": "/static/media/NanumSquareRoundR.7cc884a7656290139c3d.woff",
-    "main.4d9eb33c.css.map": "/static/css/main.4d9eb33c.css.map",
-    "main.41c2c51c.js.map": "/static/js/main.41c2c51c.js.map"
+    "main.6b4b3e10.css.map": "/static/css/main.6b4b3e10.css.map",
+    "main.07b2e8b7.js.map": "/static/js/main.07b2e8b7.js.map"
   },
   "entrypoints": [
-    "static/css/main.4d9eb33c.css",
-    "static/js/main.41c2c51c.js"
+    "static/css/main.6b4b3e10.css",
+    "static/js/main.07b2e8b7.js"
   ]
 }

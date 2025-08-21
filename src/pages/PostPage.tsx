@@ -9,23 +9,45 @@ import { Badge } from '../components/ui/badge';
 import { GiscusComments } from '../components/GiscusComments';
 import { Calendar, User } from 'lucide-react';
 
+interface CategoryTree {
+  [category: string]: {
+    total: number;
+    subcategories: Record<string, number>;
+  };
+}
+
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>();
   const post = posts.find(p => p.slug === slug) as Post | undefined;
   const [sidebarWidth, setSidebarWidth] = useState(320);
 
-  // This is needed for the sidebar, we can just use a dummy handler for now
-  const [selectedCategory, setSelectedCategory] = useState('전체');
-
-  const categories = posts.reduce((acc, post) => {
+  // 카테고리 트리 생성
+  const categoryTree: CategoryTree = posts.reduce((acc, post) => {
     const category = (post as Post).category || '미분류';
+    const subcategory = (post as Post).subcategory || '';
+    
     if (!acc[category]) {
-      acc[category] = 0;
+      acc[category] = {
+        total: 0,
+        subcategories: {}
+      };
     }
-    acc[category]++;
+    
+    acc[category].total++;
+    
+    if (subcategory) {
+      if (!acc[category].subcategories[subcategory]) {
+        acc[category].subcategories[subcategory] = 0;
+      }
+      acc[category].subcategories[subcategory]++;
+    }
+    
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as CategoryTree);
 
+  const handleCategorySelect = (category: string, subcategory?: string) => {
+    // PostPage에서는 실제 내비게이션이 필요 없으므로 빈 함수
+  };
 
   const totalPostCount = posts.length;
 
@@ -36,9 +58,10 @@ export function PostPage() {
   return (
     <div className="flex h-screen bg-background">
       <BlogSidebar
-        categories={categories}
+        categoryTree={categoryTree}
         selectedCategory={post.category || '미분류'}
-        onCategorySelect={setSelectedCategory} // Dummy handler, clicking will navigate via Link
+        selectedSubcategory={post.subcategory || ''}
+        onCategorySelect={handleCategorySelect}
         onWidthChange={setSidebarWidth}
         totalPosts={totalPostCount}
       />

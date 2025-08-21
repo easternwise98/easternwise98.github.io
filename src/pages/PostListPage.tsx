@@ -11,23 +11,51 @@ interface PostListPageProps {
   posts: Post[];
 }
 
+interface CategoryTree {
+  [category: string]: {
+    total: number;
+    subcategories: Record<string, number>;
+  };
+}
+
 export function PostListPage({ posts }: PostListPageProps) {
   const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('latest');
   const [sidebarWidth, setSidebarWidth] = useState(320);
 
-  // 모든 태그와 카테고리 동적 생성
+  // 모든 태그와 카테고리 트리 동적 생성
   const availableTags = Array.from(new Set(posts.flatMap(post => post.tags))).sort();
-  const categories = posts.reduce((acc, post) => {
+  
+  const categoryTree: CategoryTree = posts.reduce((acc, post) => {
     const category = post.category || '미분류';
+    const subcategory = post.subcategory || '';
+    
     if (!acc[category]) {
-      acc[category] = 0;
+      acc[category] = {
+        total: 0,
+        subcategories: {}
+      };
     }
-    acc[category]++;
+    
+    acc[category].total++;
+    
+    if (subcategory) {
+      if (!acc[category].subcategories[subcategory]) {
+        acc[category].subcategories[subcategory] = 0;
+      }
+      acc[category].subcategories[subcategory]++;
+    }
+    
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as CategoryTree);
+
+  const handleCategorySelect = (category: string, subcategory?: string) => {
+    setSelectedCategory(category);
+    setSelectedSubcategory(subcategory || '');
+  };
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags(prev =>
@@ -47,14 +75,17 @@ export function PostListPage({ posts }: PostListPageProps) {
   const filteredPosts = posts
     .filter(post => {
       const postCategory = post.category || '미분류';
+      const postSubcategory = post.subcategory || '';
+      
       const matchesCategory = selectedCategory === '전체' || postCategory === selectedCategory;
+      const matchesSubcategory = !selectedSubcategory || postSubcategory === selectedSubcategory;
       const matchesSearch = searchQuery === '' ||
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (post.summary && post.summary.toLowerCase().includes(searchQuery.toLowerCase())) ||
         post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesTags = selectedTags.length === 0 ||
         selectedTags.some(tag => post.tags.includes(tag));
-      return matchesCategory && matchesSearch && matchesTags;
+      return matchesCategory && matchesSubcategory && matchesSearch && matchesTags;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -67,12 +98,23 @@ export function PostListPage({ posts }: PostListPageProps) {
 
   const totalPostCount = posts.length;
 
+  const getPageTitle = () => {
+    if (selectedCategory === '전체') {
+      return '모든 연구글';
+    } else if (selectedSubcategory) {
+      return `${selectedCategory} > ${selectedSubcategory}`;
+    } else {
+      return selectedCategory;
+    }
+  };
+
   return (
     <div className="flex h-screen bg-background">
       <BlogSidebar
-        categories={categories}
+        categoryTree={categoryTree}
         selectedCategory={selectedCategory}
-        onCategorySelect={setSelectedCategory}
+        selectedSubcategory={selectedSubcategory}
+        onCategorySelect={handleCategorySelect}
         onWidthChange={setSidebarWidth}
         totalPosts={totalPostCount}
       />
@@ -84,7 +126,7 @@ export function PostListPage({ posts }: PostListPageProps) {
         <div className="p-6 border-b border-border bg-background">
           <div className="max-w-none space-y-4">
             <h1 className="text-foreground font-bold text-xl">
-              {selectedCategory === '전체' ? '모든 연구글' : selectedCategory} ({filteredPosts.length})
+              {getPageTitle()} ({filteredPosts.length})
             </h1>
             <AdvancedSearch
               searchQuery={searchQuery}

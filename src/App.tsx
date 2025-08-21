@@ -13,6 +13,7 @@ export interface Post {
   summary: string;
   content: string;
   category?: string; // Optional fields from original design
+  subcategory?: string; // Add subcategory field
   readTime?: string;
   views?: number;
   likes?: number;

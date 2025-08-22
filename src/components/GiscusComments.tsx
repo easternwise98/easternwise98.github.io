@@ -19,6 +19,8 @@ export const GiscusComments: React.FC = () => {
   useEffect(() => {
     if (!ref.current) return;
 
+    const giscusContainer = ref.current;
+
     const script = document.createElement('script');
     script.src = 'https://giscus.app/client.js';
     script.async = true;
@@ -36,12 +38,12 @@ export const GiscusComments: React.FC = () => {
     script.setAttribute('data-lang', 'ko');
     script.setAttribute('data-theme', theme);
 
-    ref.current.appendChild(script);
+    giscusContainer.appendChild(script);
 
     // Clean up script on component unmount
     return () => {
-      if (ref.current) {
-        ref.current.innerHTML = '';
+      if (giscusContainer) {
+        giscusContainer.innerHTML = '';
       }
     };
   }, [theme]);

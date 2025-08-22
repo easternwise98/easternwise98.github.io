@@ -8,14 +8,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Search, Filter, X, Calendar as CalendarIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { DateRange } from "react-day-picker";
+
 interface AdvancedSearchProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   selectedTags: string[];
   onTagToggle: (tag: string) => void;
   availableTags: string[];
-  sortBy: string;
-  onSortChange: (sort: string) => void;
+  sortBy: "latest" | "oldest" | "views" | "likes";
+  onSortChange: (sort: "latest" | "oldest" | "views" | "likes") => void;
+  dateRange: DateRange | undefined;
+  onDateRangeChange: (range: DateRange | undefined) => void;
 }
 
 export function AdvancedSearch({
@@ -26,18 +30,19 @@ export function AdvancedSearch({
   availableTags,
   sortBy,
   onSortChange,
+  dateRange,
+  onDateRangeChange,
 }: AdvancedSearchProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [dateRange, setDateRange] = useState<{start?: Date, end?: Date}>({});
 
   const clearFilters = () => {
     onSearchChange("");
     selectedTags.forEach(tag => onTagToggle(tag));
-    setDateRange({});
+    onDateRangeChange(undefined);
     onSortChange("latest");
   };
 
-  const hasActiveFilters = searchQuery || selectedTags.length > 0 || dateRange.start || dateRange.end;
+  const hasActiveFilters = searchQuery || selectedTags.length > 0 || dateRange?.from || dateRange?.to;
 
   return (
     <div className="space-y-4">
@@ -106,11 +111,11 @@ export function AdvancedSearch({
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start text-left">
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateRange.start ? (
-                        dateRange.end ? (
-                          `${dateRange.start.toLocaleDateString()} - ${dateRange.end.toLocaleDateString()}`
+                      {dateRange?.from ? (
+                        dateRange.to ? (
+                          `${dateRange.from.toLocaleDateString()} - ${dateRange.to.toLocaleDateString()}`
                         ) : (
-                          dateRange.start.toLocaleDateString()
+                          dateRange.from.toLocaleDateString()
                         )
                       ) : (
                         "날짜 선택"
@@ -120,16 +125,8 @@ export function AdvancedSearch({
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="range"
-                      selected={{
-                        from: dateRange.start,
-                        to: dateRange.end,
-                      }}
-                      onSelect={(range) => {
-                        setDateRange({
-                          start: range?.from,
-                          end: range?.to,
-                        });
-                      }}
+                      selected={dateRange}
+                      onSelect={onDateRangeChange}
                     />
                   </PopoverContent>
                 </Popover>

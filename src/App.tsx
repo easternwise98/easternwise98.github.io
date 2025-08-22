@@ -17,7 +17,7 @@ export interface Post {
   readTime?: string;
   views?: number;
   likes?: number;
-  imageUrl?: string;
+  thumbnail?: string;
   isNew?: boolean;
 }
 

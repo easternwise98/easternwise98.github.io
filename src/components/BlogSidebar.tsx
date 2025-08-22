@@ -27,7 +27,7 @@ interface BlogSidebarProps {
   selectedCategory: string;
   selectedSubcategory: string;
   onCategorySelect: (category: string, subcategory?: string) => void;
-  onWidthChange: (width: number) => void;
+  onWidthChange?: (width: number) => void;
   totalPosts: number;
 }
 
@@ -54,7 +54,7 @@ export function BlogSidebar({ categoryTree, selectedCategory, selectedSubcategor
     const handleMouseMove = (e: MouseEvent) => {
       const newWidth = Math.max(280, Math.min(500, startWidth + (e.clientX - startX)));
       setSidebarWidth(newWidth);
-      onWidthChange(newWidth);
+      onWidthChange?.(newWidth);
     };
 
     const handleMouseUp = () => {
@@ -70,7 +70,7 @@ export function BlogSidebar({ categoryTree, selectedCategory, selectedSubcategor
   const toggleSidebar = () => {
     const newWidth = sidebarWidth > 280 ? 280 : 400;
     setSidebarWidth(newWidth);
-    onWidthChange(newWidth);
+    onWidthChange?.(newWidth);
   };
 
   return (

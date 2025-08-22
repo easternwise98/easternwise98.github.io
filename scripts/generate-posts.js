@@ -19,9 +19,13 @@ function generatePostData() {
         console.warn(`WARN: Post "${fileName}" is missing 'title' or 'date' in its front-matter.`);
       }
 
+      const thumbnailMatch = content.match(/\!\[.*?\]\((.*?)\)/);
+      const thumbnail = thumbnailMatch ? thumbnailMatch[1] : null;
+
       return {
         slug,
         ...data,
+        thumbnail,
         content,
       };
     });

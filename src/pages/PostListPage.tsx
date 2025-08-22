@@ -6,6 +6,7 @@ import { AdvancedSearch } from '../components/AdvancedSearch';
 import { ScrollArea } from '../components/ui/scroll-area';
 import { motion } from 'framer-motion';
 import { Post } from '../App'; // Import the Post type from App.tsx
+import { DateRange } from "react-day-picker";
 
 interface PostListPageProps {
   posts: Post[];
@@ -23,7 +24,8 @@ export function PostListPage({ posts }: PostListPageProps) {
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState('latest');
+  const [sortBy, setSortBy] = useState<'latest' | 'oldest' | 'views' | 'likes'>('latest');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [sidebarWidth, setSidebarWidth] = useState(320);
 
   // 모든 태그와 카테고리 트리 동적 생성
@@ -85,13 +87,22 @@ export function PostListPage({ posts }: PostListPageProps) {
         post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesTags = selectedTags.length === 0 ||
         selectedTags.some(tag => post.tags.includes(tag));
-      return matchesCategory && matchesSubcategory && matchesSearch && matchesTags;
+      const matchesDate = 
+        !dateRange || !dateRange.from || 
+        (new Date(post.date) >= dateRange.from && (!dateRange.to || new Date(post.date) <= dateRange.to));
+
+      return matchesCategory && matchesSubcategory && matchesSearch && matchesTags && matchesDate;
     })
     .sort((a, b) => {
       switch (sortBy) {
+        case 'views':
+          return (b.views || 0) - (a.views || 0);
+        case 'likes':
+          return (b.likes || 0) - (a.likes || 0);
         case 'oldest':
           return new Date(a.date).getTime() - new Date(b.date).getTime();
-        default: // latest
+        case 'latest':
+        default:
           return new Date(b.date).getTime() - new Date(a.date).getTime();
       }
     });
@@ -129,14 +140,16 @@ export function PostListPage({ posts }: PostListPageProps) {
               {getPageTitle()} ({filteredPosts.length})
             </h1>
             <AdvancedSearch
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              selectedTags={selectedTags}
-              onTagToggle={handleTagToggle}
-              availableTags={availableTags}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-            />
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedTags={selectedTags}
+                onTagToggle={handleTagToggle}
+                availableTags={availableTags}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                dateRange={dateRange}
+                onDateRangeChange={setDateRange}
+              />
           </div>
         </div>
 
@@ -163,7 +176,7 @@ export function PostListPage({ posts }: PostListPageProps) {
                         category={post.category || '미분류'}
                         date={post.date}
                         tags={post.tags}
-                        imageUrl={post.imageUrl}
+                        imageUrl={post.thumbnail}
                         readTime={post.readTime || ''}
                         views={post.views || 0}
                         likes={post.likes || 0}
